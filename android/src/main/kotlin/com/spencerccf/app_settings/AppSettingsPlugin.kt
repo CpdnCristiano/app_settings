@@ -96,7 +96,7 @@ class AppSettingsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         asAnotherTask,
       )
       "nfc" -> openSettings(Settings.ACTION_NFC_SETTINGS, result, asAnotherTask)
-      "notification" -> openNotificationSettings(result, asAnotherTask)
+      "notification" -> openNotificationSettings(result, asAnotherTask, call.argument("channel"))
       "security" -> openSettings(Settings.ACTION_SECURITY_SETTINGS, result, asAnotherTask)
       "settings" -> openAppSettings(result, asAnotherTask)
       "sound" -> openSettings(Settings.ACTION_SOUND_SETTINGS, result, asAnotherTask)
@@ -225,22 +225,27 @@ class AppSettingsPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   /**
    * Open the Notification settings.
    */
-  private fun openNotificationSettings(result: Result, asAnotherTask: Boolean) {
+  private fun openNotificationSettings(result: Result, asAnotherTask: Boolean, channel: String?) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      this.activity?.let {
-        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-            .putExtra(Settings.EXTRA_APP_PACKAGE, it.packageName)
+        this.activity?.let {
+            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                .putExtra(Settings.EXTRA_APP_PACKAGE, it.packageName)
 
-        if (asAnotherTask) {
-          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            // Verifique se o canal não é nulo e não está vazio
+            if (!channel.isNullOrEmpty()) {
+                intent.putExtra(Settings.EXTRA_CHANNEL_ID, channel)
+            }
+
+            if (asAnotherTask) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            it.startActivity(intent)
         }
 
-        it.startActivity(intent)
-      }
-
-      result.success(null)
+        result.success(null)
     } else {
-      openAppSettings(result, asAnotherTask)
+        openAppSettings(result, asAnotherTask)
     }
   }
 
