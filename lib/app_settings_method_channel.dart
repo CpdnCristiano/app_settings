@@ -14,10 +14,12 @@ class MethodChannelAppSettings extends AppSettingsPlatform {
   Future<void> openAppSettings({
     AppSettingsType type = AppSettingsType.settings,
     bool asAnotherTask = false,
+    Map<String, String> params = const {}
   }) {
     return methodChannel.invokeMethod<void>('openSettings', {
       'asAnotherTask': asAnotherTask,
       'type': type.name,
+      ...params
     });
   }
 
