@@ -9,8 +9,10 @@ class AppSettings {
   static Future<void> openAppSettings({
     AppSettingsType type = AppSettingsType.settings,
     bool asAnotherTask = false,
+    Map<String, String> params = const {},
   }) {
-    return AppSettingsPlatform.instance.openAppSettings(type: type, asAnotherTask: asAnotherTask);
+    return AppSettingsPlatform.instance.openAppSettings(
+        type: type, asAnotherTask: asAnotherTask, params: params);
   }
 
   /// Open an application settings panel.
